@@ -1,3 +1,5 @@
+const { accessSync } = require("fs");
+
 const erc20_0 = artifacts.require("MockERC20.sol");
 const erc20_1 = artifacts.require("MockERC20.sol");
 const erc20_2 = artifacts.require("MockERC20.sol");
@@ -16,7 +18,7 @@ module.exports = async function(deployer, network, accounts) {
 
   await deployer.deploy(YFO, {from: accounts[0]})
   const yfo = await YFO.deployed();
-  await deployer.deploy(YFODistribution, yfo.address, '4359654017857142', '8881500', [lp0.address, lp1.address, lp2.address], [4, 3, 2], {from: accounts[0]})
+  await deployer.deploy(YFODistribution, yfo.address, '4359654017857142', '8908250', [lp0.address, lp1.address, lp2.address], [4, 3, 2], {from: accounts[0]})
   const yfoDist = await YFODistribution.deployed();
   await yfo.transferOwnership(yfoDist.address, {from: accounts[0]});
 
@@ -26,6 +28,10 @@ module.exports = async function(deployer, network, accounts) {
   
   console.log("yfo.address     = ", yfo.address)
   console.log("yfodist.address = ", yfoDist.address)
+  
+  await lp0.approve(yfoDist.address, '1000000000000000000000000000000', {from: accounts[0]})
+  await lp1.approve(yfoDist.address, '1000000000000000000000000000000', {from: accounts[0]})
+  await lp2.approve(yfoDist.address, '1000000000000000000000000000000', {from: accounts[0]})
 
   const saver = require("../save_address.js");
   saver("YFO_Migrate", {

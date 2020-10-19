@@ -57,7 +57,7 @@ contract YFODistribution is Ownable {
     uint256 public startBlock;
     uint256 public endBlock;
     // about 1 week 
-    uint256 public halvedBlock = 40320; 
+    uint256 public halvedBlock = 200; 
 
 
     event Deposit(address indexed user, uint256 indexed pid, uint256 amount);
@@ -144,7 +144,7 @@ contract YFODistribution is Ownable {
         if (bn < startBlock || bn > endBlock) {
             return 0;
         } else {
-            uint256 factor = bn.sub(bn).div(startBlock);
+            uint256 factor = bn.sub(startBlock).div(halvedBlock);
             factor = factor <= 8 ? 2 ** (8 - factor) : 1;
             return factor.mul(yfoPerBlock);
         }
