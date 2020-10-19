@@ -1,3 +1,4 @@
+const BN = require("bn.js");
 const { accessSync } = require("fs");
 
 const erc20_0 = artifacts.require("MockERC20.sol");
@@ -7,7 +8,9 @@ const YFO = artifacts.require("YFOToken.sol");
 const YFODistribution = artifacts.require("YFODistribution.sol");
 
 module.exports = async function(deployer, network, accounts) {
-  console.log('accounts[0] = ', accounts[0])
+    
+    // return 
+    console.log('accounts[0] = ', accounts[0])
 
   await deployer.deploy(erc20_0, "LP0", "LP0", '100000000000000000000000000', 18, {from: accounts[0]});
   const lp0 = await erc20_0.deployed();
@@ -18,7 +21,12 @@ module.exports = async function(deployer, network, accounts) {
 
   await deployer.deploy(YFO, {from: accounts[0]})
   const yfo = await YFO.deployed();
-  await deployer.deploy(YFODistribution, yfo.address, '4359654017857142', '8908250', [lp0.address, lp1.address, lp2.address], [4, 3, 2], {from: accounts[0]})
+  
+  let bknum = await web3.eth.getBlock("latest");
+  console.log('bk num', bknum.number)
+  let curBk = new BN(bknum.number);
+  curBk = curBk.add(new BN('1000'))
+  await deployer.deploy(YFODistribution, yfo.address, '4359654017857142', curBk, [lp0.address, lp1.address, lp2.address], [4, 3, 2], {from: accounts[0]})
   const yfoDist = await YFODistribution.deployed();
   await yfo.transferOwnership(yfoDist.address, {from: accounts[0]});
 
